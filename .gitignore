@@ -159,6 +159,8 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
+outputs/
+
 data/FER2013Test/*
 data/FER2013Train/*
 data/FER2013Valid/*

@@ -1,13 +1,13 @@
 import argparse
 import os
+import json
 
 import numpy as np
 import pandas as pd
 import tensorflow as tf
+from face_emotion.io.json import dump_json
 from face_emotion.data.dataset import build_tf_dataset
-from face_emotion.models.models import (
-    select_model_class_by_name, supported_models
-)
+from face_emotion.models.models import build_from_name, supported_models
 
 from consts import DF_COLUMNS, N_CLASSES, LABELS, INPUT_SHAPE, LABELS_FNAME
 
@@ -18,11 +18,11 @@ def get_args():
         epilog='Text at the bottom of help')
 
     parser.add_argument(
-        't', '--train_path',
+        '-t', '--train_path',
         type=str, required=True,
         help='Path to the training dataset.')
     parser.add_argument(
-        'v', '--val_path',
+        '-v', '--val_path',
         type=str, required=True,
         help='Path to the validation dataset.')
     parser.add_argument(
@@ -71,7 +71,6 @@ def get_df(data_path: str) -> pd.DataFrame:
     return df
 
 def get_callbacks(out_path: str):
-    os.makedirs(out_path, exist_ok=True)
     return [
         tf.keras.callbacks.ModelCheckpoint(
             os.path.join(out_path, 'face_emotion_clf.keras'),
@@ -84,36 +83,40 @@ def get_callbacks(out_path: str):
 
 if __name__ == '__main__':
     args = get_args()
+    os.makedirs(args.output_path, exist_ok=True)
+    dump_json(os.path.join(args.output_path, 'args.json'), vars(args))
     
     # gets the model class and custom normalization function
-    model_class, normalization_f = select_model_class_by_name(args.model)
+    model, normalization_f = build_from_name(
+        args.model, n_classes=N_CLASSES, input_shape=INPUT_SHAPE
+    )
 
     # loads the label dataframes from CSV files
+    print('Reading data...')
     train_df = get_df(args.train_path)
     val_df = get_df(args.val_path)
     
+    print('Creating dataset...')
     # creates the datasets
     comm_param = {
         'n_classes': N_CLASSES,
         'batch_size': args.batch_size,
-        'norm_f': normalization_f
+        'norm_f': normalization_f,
+        'img_shape': INPUT_SHAPE
     }
     train_ds = build_tf_dataset(train_df, shuffle=True, **comm_param)
     val_ds = build_tf_dataset(val_df, shuffle=False, **comm_param)
     
-    # loads the base model and compiles it
-    model = model_class(
-        include_top=True,
-        weights='imagenet',
-        input_shape=INPUT_SHAPE,
-        classes=N_CLASSES,
-        classifier_activation='softmax'
-    )
+    print('Compiling model...')
     model.compile(
         optimizer=tf.keras.optimizers.Adam(args.lerning_rate),
-        loss=args.loss_f, metrics=['accuracy', 'f1_score']
+        loss=args.loss_f,
+        metrics=[
+            'accuracy',
+            tf.keras.metrics.F1Score(average='weighted')
+        ]
     )
-    # run the training session
+    print('Running training...')
     model.fit(
         train_ds, validation_data=val_ds,
         epochs=args.epochs, callbacks=get_callbacks(args.output_path)

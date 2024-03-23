@@ -12,5 +12,5 @@ LABELS = [
 ]
 DF_COLUMNS = ['img_name', 'bbox', *LABELS]
 N_CLASSES = len(LABELS)
-INPUT_SHAPE = (48, 48)
+INPUT_SHAPE = (48, 48, 3)
 LABELS_FNAME = 'label.csv'
