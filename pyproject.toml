@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "face-emotion"
 version = "0.1.0"
-description = ""
+description = "Face emotion recognition based on FER+."
 authors = ["Gustavo Zanoni <gzf1996@gmail.com>"]
 readme = "README.md"
 
