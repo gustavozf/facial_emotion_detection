@@ -1,21 +1,17 @@
 import argparse
 import os
-import json
 
-import numpy as np
-import pandas as pd
 import tensorflow as tf
 from face_emotion.io.json import dump_json
 from face_emotion.data.dataset import build_tf_dataset
 from face_emotion.models.models import build_from_name, supported_models
 
-from consts import DF_COLUMNS, N_CLASSES, LABELS, INPUT_SHAPE, LABELS_FNAME
+from common import N_CLASSES, INPUT_SHAPE, get_df
 
 def get_args():
     parser = argparse.ArgumentParser(
         prog='FaceEmotionTrainer',
-        description='Train a model for face emotion classification.',
-        epilog='Text at the bottom of help')
+        description='Train a model for face emotion classification.')
 
     parser.add_argument(
         '-t', '--train_path',
@@ -32,15 +28,15 @@ def get_args():
         help='Output path for saving models and logs.')
     parser.add_argument(
         '-b', '--batch_size',
-        type=int, required=False, default=32,
+        type=int, required=False, default=512,
         help='Training batch size.')
     parser.add_argument(
         '-e', '--epochs',
-        type=int, required=False, default=100,
+        type=int, required=False, default=50,
         help='Total number of epochs.')
     parser.add_argument(
         '-lr', '--lerning_rate',
-        type=float, required=False, default=0.01,
+        type=float, required=False, default=0.001,
         help='Initial learning rate.')
     parser.add_argument(
         '-m', '--model',
@@ -55,26 +51,19 @@ def get_args():
     
     return parser.parse_args()
 
-def get_df(data_path: str) -> pd.DataFrame:
-    ''' Read the labels CSV as a DataFrame. '''
-    df = pd.read_csv(
-        os.path.join(data_path, LABELS_FNAME),
-        header=None, index_col=None, names=DF_COLUMNS)
-    # expand the image names to the full path
-    df['img_name'] = data_path + os.sep + df['img_name']
-    # generate the label based on the annotations
-    df['label'] = np.argmax(df.iloc[:, -N_CLASSES:], axis=1)
-    # remove redundant columns
-    # since all bboxes have the same value, they all can be removed
-    df = df.drop(LABELS + ['bbox'], axis=1)
+def get_loss(loss_f: str):
+    # categorical focal ce cannot be initialized as a string
+    if loss_f == 'categorical_focal_crossentropy':
+        return tf.keras.losses.CategoricalFocalCrossentropy()
 
-    return df
+    return loss_f
 
 def get_callbacks(out_path: str):
     return [
         tf.keras.callbacks.ModelCheckpoint(
-            os.path.join(out_path, 'face_emotion_clf.keras'),
+            os.path.join(out_path, 'face_emotion_clf.weights.h5'),
             save_best_only=True,
+            save_weights_only=True,
             monitor='val_f1_score',
             mode = 'max'
         ),
@@ -110,7 +99,7 @@ if __name__ == '__main__':
     print('Compiling model...')
     model.compile(
         optimizer=tf.keras.optimizers.Adam(args.lerning_rate),
-        loss=args.loss_f,
+        loss=get_loss(args.loss_f),
         metrics=[
             'accuracy',
             tf.keras.metrics.F1Score(average='weighted')
