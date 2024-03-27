@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DATA_PATH="/Volumes/Extreme SSD/facial_emotion_recognition/data"
-OUT_PATH="/Volumes/Extreme SSD/facial_emotion_recognition/outputs/v003_v2"
+OUT_PATH="/Volumes/Extreme SSD/facial_emotion_recognition/outputs/v008"
 
 python train.py \
     --train_path "$DATA_PATH/FER2013Train" \
@@ -10,8 +10,9 @@ python train.py \
     --batch_size 1024 \
     --epochs 50 \
     --lerning_rate 0.001 \
-    --model resnet50 \
-    --loss_f categorical_crossentropy
+    --model effnetb1 \
+    --loss_f categorical_crossentropy \
+    --data_aug strong
 
 python eval.py \
     --test_path "$DATA_PATH/FER2013Test" \

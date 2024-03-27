@@ -62,7 +62,7 @@ def evaluate_model(model, test_ds):
     for X_data, y_true in tqdm(test_ds):
         # run prediction
         _start = time.time()
-        y_pred = model(X_data)
+        y_pred = model(X_data, training=False)
         _end = time.time() - _start
 
         # compute execution time and save predictions

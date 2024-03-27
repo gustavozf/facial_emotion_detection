@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 import tensorflow as tf
 
+from face_emotion.data.data_aug import DataAugmenter
 from face_emotion.models.models import pass_through_norm as default_norm
 
 @tf.numpy_function(Tout=(tf.uint8, tf.int64))
@@ -41,6 +42,7 @@ def build_tf_dataset(
         labels_df: pd.DataFrame,
         batch_size: int = 32,
         shuffle: bool = False,
+        data_aug: str = None,
         n_classes: int = 10,
         img_shape: tuple = (48, 48, 3),
         norm_f: Callable = default_norm
@@ -56,6 +58,16 @@ def build_tf_dataset(
         ds = ds.shuffle(labels_df.shape[0])
 
     ds = ds.map(read_gs_image, num_parallel_calls=tf.data.AUTOTUNE)
+
+    if data_aug is not None:
+        augmenter = DataAugmenter(aug_type=data_aug, img_size=img_shape[0])
+        ds = ds.map(
+            lambda img, label: (
+                tf.numpy_function(func=augmenter, inp=[img], Tout=tf.uint8),
+                label
+            ),
+            num_parallel_calls=tf.data.AUTOTUNE)
+
     ds = ds.map(
         partial(set_shape, img_shape=img_shape),
         num_parallel_calls=tf.data.AUTOTUNE)

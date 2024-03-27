@@ -48,6 +48,11 @@ def get_args():
         type=str, required=False,
         default='categorical_crossentropy',
         help='Loss function.')
+    parser.add_argument(
+        '-d', '--data_aug',
+        type=str, required=False,
+        default=None, choices={'weak', 'strong'},
+        help='Data augmentation technique to be applied.')
     
     return parser.parse_args()
 
@@ -93,7 +98,9 @@ if __name__ == '__main__':
         'norm_f': normalization_f,
         'img_shape': INPUT_SHAPE
     }
-    train_ds = build_tf_dataset(train_df, shuffle=True, **comm_param)
+    train_ds = build_tf_dataset(
+        train_df, shuffle=True, data_aug=args.data_aug, **comm_param
+    )
     val_ds = build_tf_dataset(val_df, shuffle=False, **comm_param)
     
     print('Compiling model...')
@@ -107,6 +114,8 @@ if __name__ == '__main__':
     )
     print('Running training...')
     model.fit(
-        train_ds, validation_data=val_ds,
-        epochs=args.epochs, callbacks=get_callbacks(args.output_path)
+        train_ds,
+        validation_data=val_ds,
+        epochs=args.epochs,
+        callbacks=get_callbacks(args.output_path)
     )
