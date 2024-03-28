@@ -6,14 +6,15 @@ Details on how to setup the project and run the main scripts, are described as f
 
 ## Project Organization
 This project is organized as follows:
-- `data`: path containing all of the data used for training, evaluation and testing;
+- `data`: path containing all of the data used for training, evaluation and testing (to donwload the full dataset, please recall the [FER+](https://github.com/microsoft/FERPlus) repository);
 - `deploy`: sample application developed in flask to showcase the model usage in a production level;
+- `docs`: files containing information about the taken experiments;
 - `face_emotion`: library containing the core structures, as: models, dataset creations, auxiliary functions, etc.;
 - `notebooks`: Jupyter notebooks developed for data exploration and problem understanding;
 - `scripts`: training and evaluation scripts.
 
 ## Env Setup and Library Installation
-In order to build the project and run the training/evaluation scripts, we recommend that a [conda](https://docs.anaconda.com/free/miniconda/index.html) environment is created with Python v3.10 and then activated:
+In order to build the project and run the training/evaluation scripts, we recommend that a [conda](https://docs.anaconda.com/free/miniconda/index.html) environment is created with Python v3.10:
 
 ```shell
 conda create -n face_emotion python==3.10
@@ -26,7 +27,7 @@ In this project, we developed a small library called `face_emotion`, in which ha
 pip install poetry
 ```
 
-The library dependencies are described in `pyproject.toml`. In this one, it is possible to observe that the library requires the following packages:
+The library dependencies are described in `pyproject.toml`. In this project, our library requires the following packages:
 
 ```
 opencv-python==4.9.0.80
@@ -37,7 +38,7 @@ pandas==2.2.1
 tqdm==4.66.2
 ```
 
-In order to install them and the `face_emotion` library, it is required that the following commands are executed:
+In order to install them and the `face_emotion` library, plese execute the following commands:
 
 ```
 poetry build
