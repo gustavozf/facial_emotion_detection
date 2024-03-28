@@ -27,7 +27,6 @@ def plot_cm(
     plt.savefig(os.path.join(eval_path, 'norm_conf_mtx.png'))
 
     plt.clf()
-
     cmp = ConfusionMatrixDisplay.from_predictions(
         y_true, y_pred, normalize=None, **cm_config
     )

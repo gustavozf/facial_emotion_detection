@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DATA_PATH="/Volumes/Extreme SSD/facial_emotion_recognition/data"
-OUT_PATH="/Volumes/Extreme SSD/facial_emotion_recognition/outputs/v008"
+OUT_PATH="/Volumes/Extreme SSD/facial_emotion_recognition/outputs/v010"
 
 python train.py \
     --train_path "$DATA_PATH/FER2013Train" \

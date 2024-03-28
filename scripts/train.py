@@ -72,7 +72,8 @@ def get_callbacks(out_path: str):
             monitor='val_f1_score',
             mode = 'max'
         ),
-        tf.keras.callbacks.CSVLogger(os.path.join(out_path, 'logs.csv'))
+        tf.keras.callbacks.CSVLogger(os.path.join(out_path, 'logs.csv')),
+        tf.keras.callbacks.ReduceLROnPlateau(factor=0.1, patience=10)
     ]
 
 if __name__ == '__main__':

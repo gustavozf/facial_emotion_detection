@@ -1,0 +1,11 @@
+Model,Loss,LR,Epochs,Batch Size,LR Scheduler,DataAug,Acc,Precision,Recall,F1-Score,FPS,Latency,Latency p\ batch
+MobileNetV2,categorical_crossentropy,0.001,50,512,-,-,0.5875,0.6208,0.5875,0.5853,"4,423.8162",0.0002,0.1154
+EfficientNetV2B0,categorical_crossentropy,0.001,50,512,-,-,0.7557,0.7508,0.7557,0.7510,"2,274.8687",0.0004,0.2244
+EfficientNetV2B1,categorical_crossentropy,0.001,50,512,-,-,0.7610,0.7524,0.7610,0.7535,"2,105.3158",0.0005,0.2424
+EfficientNetV2B2,categorical_crossentropy,0.001,50,512,-,-,0.7593,0.7526,0.7593,0.7516,"1,974.2821",0.0005,0.2585
+ResNet50V2,categorical_crossentropy,0.001,50,512,-,-,0.2939,0.2217,0.2939,0.2370,"3,702.1437",0.0003,0.1379
+EfficientNetV2B1,categorical_crossentropy,0.001,50,512,-,Weak,0.7837,0.7753,0.7837,0.7759,"1,967.7577",0.0005,0.2594
+EfficientNetV2B1,categorical_crossentropy,0.001,50,512,-,Strong,0.7904,0.7840,0.7904,0.7847,"1,987.2872",0.0005,0.2568
+EfficientNetV2B1,categorical_focal_crossentropy,0.001,50,512,-,-,0.7638,0.7574,0.7638,0.7578,"2,073.1429",0.0005,0.2462
+EfficientNetV2B1,categorical_focal_crossentropy,0.001,50,512,-,Strong,0.7867,0.7798,0.7867,0.7802,"1,993.7448",0.0005,0.2560
+EfficientNetV2B1,categorical_crossentropy,0.001,50,512,ReduceOnPlateau,Strong,0.7946,0.7880,0.7946,0.7896,"1,938.8320",0.0005,0.2633

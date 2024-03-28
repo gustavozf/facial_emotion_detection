@@ -7,6 +7,7 @@ Details on how to setup the project and run the main scripts, are described as f
 ## Project Organization
 This project is organized as follows:
 - `data`: path containing all of the data used for training, evaluation and testing;
+- `deploy`: sample application developed in flask to showcase the model usage in a production level;
 - `face_emotion`: library containing the core structures, as: models, dataset creations, auxiliary functions, etc.;
 - `notebooks`: Jupyter notebooks developed for data exploration and problem understanding;
 - `scripts`: training and evaluation scripts.
@@ -40,5 +41,43 @@ In order to install them and the `face_emotion` library, it is required that the
 
 ```
 poetry build
-pip install dist/face_emotion-0.1.0-py3-none-any.whl
+pip install dist/face_emotion-0.1.2-py3-none-any.whl
 ```
+## Training and Evaluation
+Both training and evaluation scripts may be found under the `scripts/` folder. A sample command for using both of the training and evaluation scripts, may be seen as follows:
+
+```
+DATA_PATH="/path/to/data"
+OUT_PATH="/path/to/outputs"
+
+python train.py \
+    --train_path "$DATA_PATH/FER2013Train" \
+    --val_path "$DATA_PATH/FER2013Valid" \
+    --output_path "$OUT_PATH" \
+    --batch_size 1024 \
+    --epochs 50 \
+    --lerning_rate 0.001 \
+    --model effnetb1 \
+    --loss_f categorical_crossentropy \
+    --data_aug strong
+
+python eval.py \
+    --test_path "$DATA_PATH/FER2013Test" \
+    --exp_path "$OUT_PATH" \
+    --batch_size 512
+```
+
+## Deployment
+A sample flask application was developed and made available in `deploy/`. In order to run it, it is required that the following packages are installed:
+
+```
+flask==3.0.2
+jsonpickle==3.0.3
+```
+
+The following command need to be executed to start the application:
+```
+flask run
+```
+
+Although a Dockerfile is made available for containerization, it is worth mentioning that it is yet to be validated.
